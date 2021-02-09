@@ -1,0 +1,71 @@
+PODS:
+  - Alamofire (5.4.1)
+  - Differentiator (5.0.0)
+  - Gradients (0.3.0)
+  - Kingfisher (5.15.8):
+    - Kingfisher/Core (= 5.15.8)
+  - Kingfisher/Core (5.15.8)
+  - MarqueeLabel (4.0.5)
+  - RxCocoa (6.0.0):
+    - RxRelay (= 6.0.0)
+    - RxSwift (= 6.0.0)
+  - RxDataSources (5.0.0):
+    - Differentiator (~> 5.0)
+    - RxCocoa (~> 6.0)
+    - RxSwift (~> 6.0)
+  - RxKingfisher (2.0.0):
+    - Kingfisher (~> 5)
+    - RxCocoa (~> 6)
+    - RxSwift (~> 6)
+  - RxRelay (6.0.0):
+    - RxSwift (= 6.0.0)
+  - RxSwift (6.0.0)
+  - SDWebImage (5.10.2):
+    - SDWebImage/Core (= 5.10.2)
+  - SDWebImage/Core (5.10.2)
+  - Then (2.7.0)
+
+DEPENDENCIES:
+  - Alamofire
+  - Gradients
+  - Kingfisher
+  - MarqueeLabel
+  - RxCocoa
+  - RxDataSources
+  - RxKingfisher
+  - RxSwift
+  - SDWebImage
+  - Then
+
+SPEC REPOS:
+  trunk:
+    - Alamofire
+    - Differentiator
+    - Gradients
+    - Kingfisher
+    - MarqueeLabel
+    - RxCocoa
+    - RxDataSources
+    - RxKingfisher
+    - RxRelay
+    - RxSwift
+    - SDWebImage
+    - Then
+
+SPEC CHECKSUMS:
+  Alamofire: 2291f7d21ca607c491dd17642e5d40fdcda0e65c
+  Differentiator: e8497ceab83c1b10ca233716d547b9af21b9344d
+  Gradients: d7e1be639692b86577616ee55ea96f54fb5f1de1
+  Kingfisher: a3c03d702433fa6cfedabb2bddbe076fb8f2e902
+  MarqueeLabel: 00cc0bcd087111dca575878b3531af980559707d
+  RxCocoa: 3f79328fafa3645b34600f37c31e64c73ae3a80e
+  RxDataSources: aa47cc1ed6c500fa0dfecac5c979b723542d79cf
+  RxKingfisher: d13ea82bb44c6830acfb51c02c86f35dae009f79
+  RxRelay: 8d593be109c06ea850df027351beba614b012ffb
+  RxSwift: c14e798c59b9f6e9a2df8fd235602e85cc044295
+  SDWebImage: b969dcfc02c40a5da71eac0b03b8f1a0c794a86f
+  Then: acfe0be7e98221c6204e12f8161459606d5d822d
+
+PODFILE CHECKSUM: f433db6ab6859d45d2af92bb1ff3fbfaaff1c70a
+
+COCOAPODS: 1.10.0
