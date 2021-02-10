@@ -36,6 +36,31 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
         hideKeyboardWhenTappedAround()
         bindViewModelInputs()
         bindViewModelOutputs()
+        configureViews()
+    }
+
+    private func configureViews() {
+        let didBeginEditing = searchController.searchBar.rx.textDidBeginEditing.asDriver().mapTo(true)
+        let didEndEditing = searchController.searchBar.rx.textDidEndEditing.asDriver().mapTo(false)
+        let isEditing = Driver.merge(didBeginEditing, didEndEditing).startWith(false)
+
+        let v = UIView()
+        v.backgroundColor = Resources.Appearance.Color.viewBackground
+
+        isEditing
+            .drive(onNext: { [weak self] editing in
+                guard let self = self else { return }
+                if editing {
+                    v.removeFromSuperview()
+                    self.collectionView.add(to: self.view)
+                    self.collectionView.pinToEdges(of: self.view)
+                } else {
+                    self.collectionView.removeFromSuperview()
+                    v.add(to: self.view)
+                    v.pinToEdges(of: self.view)
+                }
+
+            }).disposed(by: disposeBag)
     }
 
     private func bindViewModelInputs() {
@@ -47,8 +72,20 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
             .compactMap { $0 }
             .filter { $0.isEmpty == false }
             .throttle(.milliseconds(300), scheduler: MainScheduler.instance)
-            .debug()
             .bind(to: viewModel.input.searchText)
+            .disposed(by: disposeBag)
+
+        searchController
+            .searchBar
+            .rx
+            .textDidEndEditing
+            .bind(to: viewModel.input.textDidEndEditing)
+            .disposed(by: disposeBag)
+
+        collectionView
+            .rx
+            .reachedBottom(offset: 10)
+            .bind(to: viewModel.input.reachedBottom)
             .disposed(by: disposeBag)
     }
 
@@ -56,10 +93,22 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
 
         viewModel
             .output
-            .searchResult
-            .drive(onNext: { value in
-                print(value)
-            }).disposed(by: disposeBag)
+            .searchMoreBooks
+            .debug()
+            .drive()
+            .disposed(by: disposeBag)
+
+        viewModel
+            .output
+            .books
+            .drive(collectionView.rx.items) { collectionView, row, book in
+                let indexPath = IndexPath(row: row, section: 0)
+                let cell = collectionView.dequeueReusableCell(ofType: BookCell.self, for: indexPath)
+                cell.titleLabel.text = book.title
+                cell.subtitleLabel.text = book.author
+                return cell
+            }
+            .disposed(by: disposeBag)
     }
 
     private func setupNavigationBar() {
@@ -72,16 +121,21 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
     }
 
     private func setupCollectionView() {
-        collectionView.dataSource = self
-        collectionView.delegate = self
 
         collectionView.do {
             $0.backgroundColor = Resources.Appearance.Color.viewBackground
             $0.register(cellType: BookCell.self)
             $0.showsVerticalScrollIndicator = false
-            $0.add(to: view)
-            $0.pinToEdges(of: view)
-            $0.contentInset = UIEdgeInsets(top: 10, left: UIScreen.main.bounds.width * 0.058, bottom: 20, right: UIScreen.main.bounds.width * -0.058)
+            $0.contentInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: -16)
+        }
+
+        // FlowLayout setup
+
+        guard let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout else { return }
+
+        flowLayout.do {
+            $0.itemSize = CGSize(width: view.frame.width, height: 72)
+            $0.minimumLineSpacing = 16
         }
     }
 
@@ -117,24 +171,5 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
     @objc func dismissKeyboard() {
         searchController.searchBar.endEditing(true)
         searchController.isActive = false
-    }
-}
-
-extension SearchViewController: UICollectionViewDelegateFlowLayout {
-
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        .init(width: view.frame.width, height: 72)
-    }
-}
-
-extension SearchViewController: UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        10
-    }
-
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(ofType: BookCell.self, for: indexPath)
-
-        return cell
     }
 }

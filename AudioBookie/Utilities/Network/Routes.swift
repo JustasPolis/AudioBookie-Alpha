@@ -13,7 +13,7 @@ enum Routes {
     case book(id: Int)
     case booksByGenre(genre: Genre)
     case booksByLanguage(language: Language)
-    case search(text: String)
+    case search(query: String, limit: Int, offset: Int)
 
     var baseURL: URL {
         URL(string: "https://librivox.app/api/")!
@@ -60,8 +60,8 @@ enum Routes {
                 return ["genre": genre.name]
             case .booksByLanguage(let language):
                 return ["language": language.name]
-            case .search(let text):
-                return ["text": text]
+            case .search(let query, let limit, let offset):
+                return ["limit": String(limit), "offset": String(offset), "query": query, "timestamp": String(Date().millisecondsSince1970)]
         }
     }
 

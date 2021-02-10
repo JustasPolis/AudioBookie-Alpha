@@ -37,7 +37,7 @@ extension Scene: TargetScene {
                 let browseViewController = UINavigationController(rootViewController: BrowseViewController(viewModel: browseViewModel))
 
                 // SearchViewController init
-                let searchViewModel = SearchViewModel()
+                let searchViewModel = SearchViewModel(networkService: networkService)
                 let searchViewController = UINavigationController(rootViewController: SearchViewController(viewModel: searchViewModel))
 
                 // LibraryViewController init

@@ -56,7 +56,7 @@ class BookCell: UICollectionViewCell {
         stackView.do {
             $0.add(to: self)
             $0.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-            $0.leadingAnchor.constraint(equalTo: bookCoverImageView.trailingAnchor, constant: 16).isActive = true
+            $0.leadingAnchor.constraint(equalTo: bookCoverImageView.trailingAnchor, constant: 12).isActive = true
             $0.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
         }
     }

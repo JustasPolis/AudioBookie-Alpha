@@ -12,6 +12,7 @@ protocol NetworkServiceType {
     func getNewBooks(limit: Int, offset: Int) -> Observable<[Book]>
     func getTopBooks(limit: Int, offset: Int) -> Observable<[Book]>
     func getBookDetails(id: Int) -> Observable<Book>
+    func search(query: String, limit: Int, offset: Int) -> Observable<[Book]>
 }
 
 class NetworkService: NetworkServiceType {
@@ -38,5 +39,9 @@ class NetworkService: NetworkServiceType {
 
     func getBookDetails(id: Int) -> Observable<Book> {
         network.request(Routes.book(id: id))
+    }
+
+    func search(query: String, limit: Int, offset: Int) -> Observable<[Book]> {
+        network.request(Routes.search(query: query, limit: limit, offset: offset))
     }
 }
