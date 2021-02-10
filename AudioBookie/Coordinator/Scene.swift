@@ -37,14 +37,36 @@ extension Scene: TargetScene {
                 let browseViewController = UINavigationController(rootViewController: BrowseViewController(viewModel: browseViewModel))
 
                 // SearchViewController init
-                let searchViewController = UINavigationController(rootViewController: SearchViewController())
+                let searchViewModel = SearchViewModel()
+                let searchViewController = UINavigationController(rootViewController: SearchViewController(viewModel: searchViewModel))
 
                 // LibraryViewController init
                 let libraryViewController = UINavigationController(rootViewController: LibraryViewController())
 
                 // TabBarController init
 
+                let browseTabBarItem = UITabBarItem(
+                    title: "Browse",
+                    image: #imageLiteral(resourceName: "browse"),
+                    tag: 0
+                )
+                let libraryTabBarItem = UITabBarItem(
+                    title: "Library",
+                    image: #imageLiteral(resourceName: "downloads"),
+                    tag: 1
+                )
+                let searchTabBarItem = UITabBarItem(
+                    title: "Search",
+                    image: #imageLiteral(resourceName: "search"),
+                    tag: 2
+                )
+
+                browseViewController.tabBarItem = browseTabBarItem
+                libraryViewController.tabBarItem = libraryTabBarItem
+                searchViewController.tabBarItem = searchTabBarItem
+
                 let tabBarController = TabBarController()
+                tabBarController.tabBar.tintColor = .systemPurple
                 tabBarController.viewControllers = [searchViewController, browseViewController, libraryViewController]
 
                 // return
