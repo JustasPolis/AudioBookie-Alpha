@@ -33,15 +33,13 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
         setupCollectionView()
         setupNavigationBar()
         setupSearchController()
-        hideKeyboardWhenTappedAround()
-        bindViewModelInputs()
-        bindViewModelOutputs()
+        bindViewModel()
         configureViews()
     }
 
     private func configureViews() {
         let didBeginEditing = searchController.searchBar.rx.textDidBeginEditing.asDriver().mapTo(true)
-        let didEndEditing = searchController.searchBar.rx.textDidEndEditing.asDriver().mapTo(false)
+        let didEndEditing = searchController.searchBar.rx.cancelButtonClicked.asDriver().mapTo(false)
         let isEditing = Driver.merge(didBeginEditing, didEndEditing).startWith(false)
 
         let v = UIView()
@@ -63,43 +61,56 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
             }).disposed(by: disposeBag)
     }
 
-    private func bindViewModelInputs() {
+    private func bindViewModel() {
 
-        searchController
+        let keyboardSearchButtonClicked = searchController.searchBar.rx.searchButtonClicked.asDriver()
+        let willBeginDragging = collectionView.rx.willBeginDragging.asDriver()
+
+        Driver.merge(keyboardSearchButtonClicked, willBeginDragging)
+            .drive(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                if self.searchController.searchBar.isFirstResponder {
+                    self.searchController.searchBar.resignFirstResponder()
+                }
+            })
+            .disposed(by: disposeBag)
+
+        let textDidChange = searchController
+            .searchBar
+            .rx
+            .delegate
+            .methodInvoked(#selector(UISearchBarDelegate.searchBar(_:textDidChange:)))
+            .map { _ in }
+            .asDriverOnErrorJustComplete()
+
+        let searchText = searchController
             .searchBar
             .rx
             .text
             .compactMap { $0 }
             .filter { $0.isEmpty == false }
-            .throttle(.milliseconds(300), scheduler: MainScheduler.instance)
-            .bind(to: viewModel.input.searchText)
-            .disposed(by: disposeBag)
+            .throttle(.milliseconds(600), scheduler: MainScheduler.instance)
+            .asDriverOnErrorJustComplete()
 
-        searchController
+        let cancelButtonClicked = searchController
             .searchBar
             .rx
-            .textDidEndEditing
-            .bind(to: viewModel.input.textDidEndEditing)
-            .disposed(by: disposeBag)
+            .cancelButtonClicked
+            .asDriverOnErrorJustComplete()
 
-        collectionView
+        let reachedBottom = collectionView
             .rx
             .reachedBottom(offset: 10)
-            .bind(to: viewModel.input.reachedBottom)
-            .disposed(by: disposeBag)
-    }
+            .asDriverOnErrorJustComplete()
 
-    private func bindViewModelOutputs() {
+        let input = SearchViewModelInput(searchText: searchText,
+                                         textDidChange: textDidChange,
+                                         cancelButtonClicked: cancelButtonClicked,
+                                         reachedBottom: reachedBottom)
 
-        viewModel
-            .output
-            .searchMoreBooks
-            .debug()
-            .drive()
-            .disposed(by: disposeBag)
+        let output = viewModel.transform(input: input)
 
-        viewModel
-            .output
+        output
             .books
             .drive(collectionView.rx.items) { collectionView, row, book in
                 let indexPath = IndexPath(row: row, section: 0)
@@ -108,6 +119,11 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
                 cell.subtitleLabel.text = book.author
                 return cell
             }
+            .disposed(by: disposeBag)
+
+        output
+            .loading
+            .drive()
             .disposed(by: disposeBag)
     }
 
@@ -155,21 +171,5 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
         ]
 
         UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).setTitleTextAttributes(attributes, for: .normal)
-    }
-
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        searchController.searchBar.endEditing(true)
-        searchController.isActive = false
-    }
-
-    func hideKeyboardWhenTappedAround() {
-        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-        tap.cancelsTouchesInView = false
-        view.addGestureRecognizer(tap)
-    }
-
-    @objc func dismissKeyboard() {
-        searchController.searchBar.endEditing(true)
-        searchController.isActive = false
     }
 }

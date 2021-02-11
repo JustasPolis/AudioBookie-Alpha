@@ -9,85 +9,96 @@ import RxCocoa
 import RxSwift
 
 struct SearchViewModelInput {
-    let searchText: AnyObserver<String>
-    let textDidEndEditing: AnyObserver<Void>
-    let reachedBottom: AnyObserver<Void>
+    let searchText: Driver<String>
+    let textDidChange: Driver<Void>
+    let cancelButtonClicked: Driver<Void>
+    let reachedBottom: Driver<Void>
 }
 
 struct SearchViewModelOutput {
     let books: Driver<[TestBook]>
-    let searchMoreBooks: Driver<(String, Int)>
+    let loading: Driver<Bool>
 }
 
 protocol SearchViewModelType {
-    var input: SearchViewModelInput! { get }
-    var output: SearchViewModelOutput! { get }
+    typealias Input = SearchViewModelInput
+    typealias Output = SearchViewModelOutput
+
+    func transform(input: Input) -> Output
 }
 
 class SearchViewModel: SearchViewModelType {
 
     private let networkService: NetworkServiceType
-    private(set) var input: SearchViewModelInput!
-    private(set) var output: SearchViewModelOutput!
-
-    private let searchText = PublishSubject<String>()
-    private let textDidEndEditing = PublishSubject<Void>()
-    private let reachedBottom = PublishSubject<Void>()
 
     init(networkService: NetworkServiceType) {
         self.networkService = networkService
-
-        input = SearchViewModelInput(searchText: searchText.asObserver(),
-                                     textDidEndEditing: textDidEndEditing.asObserver(),
-                                     reachedBottom: reachedBottom.asObserver())
-
-        let books = Driver.merge(searchBooks(), resetBooks())
-
-        output = SearchViewModelOutput(books: books, searchMoreBooks: searchMoreBooks())
     }
 
-    private func resetBooks() -> Driver<[TestBook]> {
-        textDidEndEditing.asDriverOnErrorJustComplete().flatMap { _ -> Driver<[TestBook]> in
-            .just([])
+    func transform(input: Input) -> Output {
+
+        func data(pageNumber: Int) -> Observable<[TestBook]> {
+            print("fetching")
+            let books = [TestBook(title: "1", author: "Albert Einstein"), TestBook(title: "2", author: "Albert Einstein"), TestBook(title: "3", author: "Albert Einstein"), TestBook(title: "4", author: "Albert Einstein"), TestBook(title: "5", author: "Albert Einstein"), TestBook(title: "6", author: "my Author2"), TestBook(title: "7", author: "my Author"), TestBook(title: "8", author: "my Author2"), TestBook(title: "9", author: "my Author"), TestBook(title: "10", author: "my Author2"), TestBook(title: "11", author: "my Author"), TestBook(title: "12", author: "my Author2")]
+            let books2 = [TestBook(title: "13", author: "Albert Einstein"), TestBook(title: "14", author: "Albert Einstein"), TestBook(title: "15", author: "Albert Einstein"), TestBook(title: "16", author: "Albert Einstein"), TestBook(title: "17", author: "Albert Einstein"), TestBook(title: "18", author: "my Author2"), TestBook(title: "19", author: "my Author"), TestBook(title: "20", author: "my Author2"), TestBook(title: "21", author: "my Author"), TestBook(title: "22", author: "my Author2"), TestBook(title: "23", author: "my Author"), TestBook(title: "24", author: "my Author2")]
+            if pageNumber == 1 {
+                return .just(books)
+            } else if pageNumber == 2 {
+                return .just(books2)
+            } else {
+                return .just([])
+            }
         }
-    }
 
-    private func searchBooks() -> Driver<[TestBook]> {
-        let books = [TestBook(title: "Art of War", author: "Albert Einstein"), TestBook(title: "Art of War", author: "Albert Einstein"), TestBook(title: "Art of War", author: "Albert Einstein"), TestBook(title: "Art of War", author: "Albert Einstein"), TestBook(title: "Art of War", author: "Albert Einstein"), TestBook(title: "my title 2", author: "my Author2"), TestBook(title: "My title", author: "my Author"), TestBook(title: "my title 2", author: "my Author2"), TestBook(title: "My title", author: "my Author"), TestBook(title: "my title 2", author: "my Author2"), TestBook(title: "My title", author: "my Author"), TestBook(title: "my title 2", author: "my Author2")]
+        let merge = Driver.merge(input.cancelButtonClicked, input.textDidChange)
 
-        return searchText
-            .flatMapLatest { _ -> Observable<[TestBook]> in
-                .just(books)
-            }.asDriverOnErrorJustComplete()
-    }
+        let activityIndicator = ActivityIndicator()
 
-    private func getBooks(pageNumber: Int) -> Driver<[TestBook]> {
-        let books = [TestBook(title: "1", author: "Albert Einstein"), TestBook(title: "2", author: "Albert Einstein"), TestBook(title: "3", author: "Albert Einstein"), TestBook(title: "4", author: "Albert Einstein"), TestBook(title: "5", author: "Albert Einstein"), TestBook(title: "6", author: "my Author2"), TestBook(title: "My title", author: "my Author"), TestBook(title: "my title 2", author: "my Author2"), TestBook(title: "My title", author: "my Author"), TestBook(title: "my title 2", author: "my Author2"), TestBook(title: "My title", author: "my Author"), TestBook(title: "my title 2", author: "my Author2")]
-        let books2 = [TestBook(title: "Art of War", author: "Albert Einstein"), TestBook(title: "Art of War", author: "Albert Einstein"), TestBook(title: "Art of War", author: "Albert Einstein"), TestBook(title: "Art of War", author: "Albert Einstein"), TestBook(title: "Art of War", author: "Albert Einstein"), TestBook(title: "my title 2", author: "my Author2"), TestBook(title: "My title", author: "my Author"), TestBook(title: "my title 2", author: "my Author2"), TestBook(title: "My title", author: "my Author"), TestBook(title: "my title 2", author: "my Author2"), TestBook(title: "My title", author: "my Author"), TestBook(title: "my title 2", author: "my Author2")]
-        if pageNumber == 1 {
-            return .just(books)
-        } else if pageNumber == 2 {
-            return .just(books2)
-        } else {
-            return .just([])
-        }
-    }
+        let resetBooks = merge
+            .flatMap { _ -> Driver<[TestBook]> in
+                .just([])
+            }
 
-    private func searchMoreBooks() -> Driver<(String, Int)> {
+        let loading = activityIndicator.asDriver()
 
-        let books = searchText
-            .flatMapLatest { searchText -> Observable<(String, Int)> in
-                self.reachedBottom.asObservable()
+        let isEmptySubject = BehaviorSubject(value: false)
+
+        let obs = isEmptySubject.asDriverOnErrorJustComplete()
+
+        let getBooks = input
+            .textDidChange
+            .do(onNext: { _ in
+                isEmptySubject.onNext(false)
+            })
+            .withLatestFrom(input.searchText)
+            .flatMapLatest { searchText -> Driver<[TestBook]> in
+                input.reachedBottom
                     .startWith(())
+                    .skip(if: loading)
+                    .skip(if: obs)
                     .scan(0) { (pageNumber, _) -> Int in
                         pageNumber + 1
                     }
                     .map { pageNumber in
                         (searchText, pageNumber)
+                    }.flatMap { _, pageNumber -> Driver<[TestBook]> in
+                        data(pageNumber: pageNumber)
+                            .do(onNext: { book in
+                                if book.isEmpty {
+                                    isEmptySubject.onNext(true)
+                                }
+                            })
+                            .delay(.seconds(2), scheduler: MainScheduler.instance)
+                            .trackActivity(activityIndicator)
+                            .asDriverOnErrorJustComplete()
+                    }.scan([]) { (acc, book) -> [TestBook] in
+                        acc + book
                     }
-            }.asDriverOnErrorJustComplete()
+            }
 
-        return books
+        let books = Driver.merge(getBooks, resetBooks)
+
+        return Output(books: books, loading: loading)
     }
 }
 
@@ -95,36 +106,3 @@ struct TestBook {
     let title: String
     let author: String
 }
-
-/*
-
- private func searchMoreBooks() -> Driver<[TestBook]> {
-
- let books = searchText
- .flatMapLatest { searchText -> Observable<(String, Int)> in
- self.reachedBottom.asObservable()
- .startWith(())
- .scan(0) { (pageNumber, _) -> Int in
- pageNumber + 1
- }
- .map { pageNumber in
- (searchText, pageNumber)
- }
- }.asDriverOnErrorJustComplete()
- .flatMapLatest { _, pageNumber -> Driver<[TestBook]> in
- self.getBooks(pageNumber: pageNumber)
- .delay(.seconds(2))
- .asObservable()
- .take(until: { book -> Bool in
- book.isEmpty
- })
- .asDriverOnErrorJustComplete()
- }
-
- let combined = books.scan([]) { old, new in
- old + new
- }
- return combined
- }
- }
- */
