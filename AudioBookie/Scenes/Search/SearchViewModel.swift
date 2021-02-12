@@ -10,14 +10,17 @@ import RxSwift
 
 struct SearchViewModelInput {
     let searchText: Driver<String>
+    let textIsEmpty: Driver<Void>
+    let textNotEmpty: Driver<Bool>
     let textDidChange: Driver<Void>
-    let cancelButtonClicked: Driver<Void>
     let reachedBottom: Driver<Void>
+    let searchCancelButtonTapped: Driver<Void>
 }
 
 struct SearchViewModelOutput {
     let books: Driver<[TestBook]>
     let loading: Driver<Bool>
+    let noResults: Driver<Bool>
 }
 
 protocol SearchViewModelType {
@@ -50,32 +53,27 @@ class SearchViewModel: SearchViewModelType {
             }
         }
 
-        let merge = Driver.merge(input.cancelButtonClicked, input.textDidChange)
-
         let activityIndicator = ActivityIndicator()
-
-        let resetBooks = merge
-            .flatMap { _ -> Driver<[TestBook]> in
-                .just([])
-            }
 
         let loading = activityIndicator.asDriver()
 
-        let isEmptySubject = BehaviorSubject(value: false)
+        // let isEmptySubject = BehaviorSubject(value: false)
 
-        let obs = isEmptySubject.asDriverOnErrorJustComplete()
+        // take(1) for error kai nebent errorina pirmas resultatas
+
+        // take(1) get books paziuret ar tuscias, jei tuscia tai renderinti no results view
+
+        // let obs = isEmptySubject.asDriverOnErrorJustComplete()
+
+        let isEmpty = input.textIsEmpty.mapTo(true)
+
+        let merge = Driver.merge(isEmpty, input.textNotEmpty)
 
         let getBooks = input
-            .textDidChange
-            .do(onNext: { _ in
-                isEmptySubject.onNext(false)
-            })
-            .withLatestFrom(input.searchText)
+            .searchText
             .flatMapLatest { searchText -> Driver<[TestBook]> in
                 input.reachedBottom
                     .startWith(())
-                    .skip(if: loading)
-                    .skip(if: obs)
                     .scan(0) { (pageNumber, _) -> Int in
                         pageNumber + 1
                     }
@@ -83,22 +81,60 @@ class SearchViewModel: SearchViewModelType {
                         (searchText, pageNumber)
                     }.flatMap { _, pageNumber -> Driver<[TestBook]> in
                         data(pageNumber: pageNumber)
-                            .do(onNext: { book in
-                                if book.isEmpty {
-                                    isEmptySubject.onNext(true)
-                                }
-                            })
-                            .delay(.seconds(2), scheduler: MainScheduler.instance)
+                            .delay(.seconds(3), scheduler: MainScheduler.instance)
                             .trackActivity(activityIndicator)
                             .asDriverOnErrorJustComplete()
-                    }.scan([]) { (acc, book) -> [TestBook] in
-                        acc + book
+                            .skip(if: merge)
+                    }.scan([]) { (acc, books) -> [TestBook] in
+                        acc + books
                     }
             }
 
-        let books = Driver.merge(getBooks, resetBooks)
+        let test = input
+            .searchText
+            .flatMapLatest { searchText -> Driver<[TestBook]> in
+                input.reachedBottom
+                    .startWith(())
+                    .scan(0) { (pageNumber, _) -> Int in
+                        pageNumber + 1
+                    }
+                    .map { pageNumber in
+                        (searchText, pageNumber)
+                    }.flatMap { _, pageNumber -> Driver<[TestBook]> in
+                        data(pageNumber: pageNumber)
+                            .delay(.seconds(6), scheduler: MainScheduler.instance)
+                            .trackActivity(activityIndicator)
+                            .asDriverOnErrorJustComplete()
+                            .skip(if: merge)
+                    }.scan([]) { (acc, books) -> [TestBook] in
+                        acc + books
+                    }
+            }
 
-        return Output(books: books, loading: loading)
+        let test1 = input
+            .searchText
+            .flatMapLatest { searchText -> Driver<(String, [TestBook])> in
+                data(pageNumber: 1)
+                    .delay(.seconds(6), scheduler: MainScheduler.instance)
+                    .asDriverOnErrorJustComplete()
+                    .skip(if: merge)
+                    .map { books in
+                        (searchText, books)
+                    }
+            }
+
+        let resetBooks = Driver.merge(input.textIsEmpty, input.searchCancelButtonTapped)
+            .flatMap { _ -> Driver<[TestBook]> in
+                .just([])
+            }
+
+        let noResults = getBooks.asObservable().take(1).map { books in
+            books.isEmpty
+        }.asDriverOnErrorJustComplete()
+
+        let books = Driver.merge(resetBooks, getBooks)
+
+        return Output(books: books, loading: loading, noResults: noResults)
     }
 }
 

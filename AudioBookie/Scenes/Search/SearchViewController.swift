@@ -17,6 +17,9 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
     private let searchController = UISearchController(searchResultsController: nil)
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
 
+    private let landingView = UIView()
+    private let searchEmptyView = UIView()
+
     init(viewModel: SearchViewModelType) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -37,25 +40,41 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
         configureViews()
     }
 
+    func addCollectionView() {
+        collectionView.add(to: view)
+        collectionView.pinToEdges(of: view)
+    }
+
+    func addLandingView() {
+        landingView.backgroundColor = Resources.Appearance.Color.viewBackground
+        landingView.add(to: view)
+        landingView.pinToEdges(of: view)
+    }
+
+    func addSearchEmptyView() {
+        searchEmptyView.backgroundColor = .blue
+        searchEmptyView.add(to: view)
+        searchEmptyView.pinToEdges(of: view)
+    }
+
+    func removeViewsFromSuperview() {
+        view.subviews.forEach { $0.removeFromSuperview() }
+    }
+
     private func configureViews() {
+
         let didBeginEditing = searchController.searchBar.rx.textDidBeginEditing.asDriver().mapTo(true)
-        let didEndEditing = searchController.searchBar.rx.cancelButtonClicked.asDriver().mapTo(false)
-        let isEditing = Driver.merge(didBeginEditing, didEndEditing).startWith(false)
+        let searchCancelButtonClicked = searchController.searchBar.rx.cancelButtonClicked.asDriver().mapTo(false)
+        let isSearching = Driver.merge(didBeginEditing, searchCancelButtonClicked).startWith(false)
 
-        let v = UIView()
-        v.backgroundColor = Resources.Appearance.Color.viewBackground
-
-        isEditing
-            .drive(onNext: { [weak self] editing in
+        isSearching
+            .drive(onNext: { [weak self] searching in
                 guard let self = self else { return }
-                if editing {
-                    v.removeFromSuperview()
-                    self.collectionView.add(to: self.view)
-                    self.collectionView.pinToEdges(of: self.view)
+                self.removeViewsFromSuperview()
+                if searching {
+                    self.addCollectionView()
                 } else {
-                    self.collectionView.removeFromSuperview()
-                    v.add(to: self.view)
-                    v.pinToEdges(of: self.view)
+                    self.addLandingView()
                 }
 
             }).disposed(by: disposeBag)
@@ -83,30 +102,71 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
             .map { _ in }
             .asDriverOnErrorJustComplete()
 
+        let searchCancelButtonTapped = searchController
+            .searchBar
+            .rx
+            .cancelButtonClicked
+            .asDriver()
+
+        let didBeginEditing = searchController.searchBar.rx.textDidBeginEditing.asDriver().mapTo(true)
+        let didEndEditing = searchController.searchBar.rx.textDidEndEditing.asDriver().mapTo(false)
+        let searchBarActive = Driver.merge(didBeginEditing, didEndEditing).startWith(true)
+
+        searchController.searchBar
+            .rx
+            .textDidBeginEditing
+            .asDriver()
+            .drive(onNext: { [weak self] in
+                self?.collectionView.contentOffset.y = -144
+            }).disposed(by: disposeBag)
+
         let searchText = searchController
             .searchBar
             .rx
             .text
+            .debounce(.milliseconds(400), scheduler: MainScheduler.instance)
             .compactMap { $0 }
             .filter { $0.isEmpty == false }
-            .throttle(.milliseconds(600), scheduler: MainScheduler.instance)
             .asDriverOnErrorJustComplete()
+            .take(if: searchBarActive)
 
-        let cancelButtonClicked = searchController
+        let textIsEmpty = searchController
             .searchBar
             .rx
-            .cancelButtonClicked
+            .text
+            .compactMap { $0 }
+            .filter { $0.isEmpty }
+            .mapToVoid()
             .asDriverOnErrorJustComplete()
+
+        let textNotEmpty = searchController
+            .searchBar
+            .rx
+            .text
+            .compactMap { $0 }
+            .filter { $0.count > 0 }
+            .asDriverOnErrorJustComplete()
+            .mapTo(false)
 
         let reachedBottom = collectionView
             .rx
             .reachedBottom(offset: 10)
             .asDriverOnErrorJustComplete()
 
+        collectionView
+            .rx
+            .reachedTestBottom()
+            .debug()
+            .asDriverOnErrorJustComplete()
+            .drive()
+            .disposed(by: disposeBag)
+
         let input = SearchViewModelInput(searchText: searchText,
+                                         textIsEmpty: textIsEmpty,
+                                         textNotEmpty: textNotEmpty,
                                          textDidChange: textDidChange,
-                                         cancelButtonClicked: cancelButtonClicked,
-                                         reachedBottom: reachedBottom)
+                                         reachedBottom: reachedBottom,
+                                         searchCancelButtonTapped: searchCancelButtonTapped)
 
         let output = viewModel.transform(input: input)
 
