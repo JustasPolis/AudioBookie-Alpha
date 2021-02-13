@@ -151,15 +151,8 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
         let reachedBottom = collectionView
             .rx
             .reachedBottom(offset: 10)
+            .startWith(true)
             .asDriverOnErrorJustComplete()
-
-        collectionView
-            .rx
-            .reachedTestBottom()
-            .debug()
-            .asDriverOnErrorJustComplete()
-            .drive()
-            .disposed(by: disposeBag)
 
         let input = SearchViewModelInput(searchText: searchText,
                                          textIsEmpty: textIsEmpty,
