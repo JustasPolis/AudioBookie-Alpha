@@ -1,6 +1,6 @@
 # AudioBookie-Alpha
 
-Application for listening free audiobooks from Librivox API. WIP
+Application for listening free audiobooks from Librivox API. 
 
 ## 🏃‍♂️ Current Status
 
