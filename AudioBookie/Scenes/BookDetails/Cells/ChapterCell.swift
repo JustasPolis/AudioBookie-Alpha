@@ -11,13 +11,12 @@ import UIKit
 class ChapterCell: UICollectionViewCell {
 
     let title = UILabel().then {
-        $0.textColor = .black
         $0.font = .systemFont(ofSize: 14)
     }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = .white
+        backgroundColor = Resources.Appearance.Color.viewBackground
         title.add(to: self)
         title.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
         title.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true

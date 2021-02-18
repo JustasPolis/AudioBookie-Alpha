@@ -43,10 +43,10 @@ class BrowseViewModel: BrowseViewModelType {
 
         let items = Observable.zip(newBooks, topBooks, genres) { [sceneCoordinator] newBooks, topBooks, genres -> [BrowseCollectionViewSectionModel] in
             [
+                .TopBooksSection(childCollectionView: .BooksCollectionView(BooksCollectionViewModel(books: topBooks, sceneCoordinator: sceneCoordinator))),
                 .NewBooksSection(childCollectionView: .BooksCollectionView(BooksCollectionViewModel(books: newBooks, sceneCoordinator: sceneCoordinator))),
                 .GenresSection(childCollectionView: .GenresCollectionView(GenresCollectionViewModel(genres: genres, sceneCoordinator: sceneCoordinator))),
-                .LanguagesSection(childCollectionView: .LanguagesCollectionView(LanguagesCollectionViewModel(languages: ["Item one", "Item two"]))),
-                .TopBooksSection(childCollectionView: .BooksCollectionView(BooksCollectionViewModel(books: topBooks, sceneCoordinator: sceneCoordinator))),
+                .LanguagesSection(childCollectionView: .LanguagesCollectionView(GenresCollectionViewModel(genres: genres, sceneCoordinator: sceneCoordinator))),
             ]
         }
         return Output(items: items)

@@ -13,9 +13,7 @@ class AudioPlayerView: UIView {
 
     // MARK: Book cover
 
-    let bookCoverView = UIView().then {
-        $0.backgroundColor = .white
-    }
+    let bookCoverView = UIView()
 
     let bookCoverImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFit
@@ -26,19 +24,16 @@ class AudioPlayerView: UIView {
 
     // MARK: Title and author
 
-    let titleAndAuthorView = UIView().then {
-        $0.backgroundColor = .white
-    }
+    let titleAndAuthorView = UIView()
 
     let chapterTitleLabel = MarqueeLabel().then {
         $0.font = UIFont.boldSystemFont(ofSize: 22.0)
-        $0.text = "That is my chapter title long ass fuck yeah yeah yeah"
+        $0.text = "Chapter label"
     }
 
     let authorLabel = MarqueeLabel().then {
         $0.font = UIFont.boldSystemFont(ofSize: 19.0)
-        $0.text = "Boom"
-        $0.textColor = .gray
+        $0.text = "Author Label"
     }
 
     lazy var chapterInformationStackView = UIStackView(arrangedSubviews: [chapterTitleLabel, authorLabel]).then {
@@ -49,24 +44,22 @@ class AudioPlayerView: UIView {
 
     // MARK: Slider and time labels
 
-    let sliderAndTimeLabelsView = UIView().then {
-        $0.backgroundColor = .white
-    }
+    let sliderAndTimeLabelsView = UIView()
 
     let durationSlider = UISlider().then {
-        $0.minimumTrackTintColor = .purple
+        $0.minimumTrackTintColor = .systemPurple
     }
 
     let elapsedTimeLabel = UILabel().then {
         $0.text = "--:--"
         $0.font = UIFont.boldSystemFont(ofSize: 14.0)
-        $0.textColor = .gray
+        $0.alpha = 0.8
     }
 
     let totalTimeLabel = UILabel().then {
         $0.text = "--:--"
         $0.font = UIFont.boldSystemFont(ofSize: 14.0)
-        $0.textColor = .gray
+        $0.alpha = 0.8
     }
 
     let activityIndicator = UIActivityIndicatorView(style: .gray)
@@ -81,13 +74,15 @@ class AudioPlayerView: UIView {
 
     // MARK: Player controls
 
-    let controlsView = UIView().then {
-        $0.backgroundColor = .white
-    }
+    let controlsView = UIView()
 
     let playPauseButton = UIButton(type: .system).then {
         $0.setImage(#imageLiteral(resourceName: "pause").withRenderingMode(.alwaysTemplate), for: .normal)
-        $0.tintColor = .black
+        if #available(iOS 13.0, *) {
+            $0.tintColor = .label
+        } else {
+            $0.tintColor = .black
+        }
         $0.contentHorizontalAlignment = .fill
         $0.contentVerticalAlignment = .fill
         $0.imageView?.contentMode = .scaleAspectFit
@@ -95,7 +90,11 @@ class AudioPlayerView: UIView {
 
     let skipForwardButton = UIButton(type: .system).then {
         $0.setImage(#imageLiteral(resourceName: "fastforward15").withRenderingMode(.alwaysTemplate), for: .normal)
-        $0.tintColor = .black
+        if #available(iOS 13.0, *) {
+            $0.tintColor = .label
+        } else {
+            $0.tintColor = .black
+        }
         $0.contentHorizontalAlignment = .fill
         $0.contentVerticalAlignment = .fill
         $0.imageView?.contentMode = .scaleAspectFit
@@ -103,7 +102,11 @@ class AudioPlayerView: UIView {
 
     let skipBackwardButton = UIButton(type: .system).then {
         $0.setImage(#imageLiteral(resourceName: "rewind15").withRenderingMode(.alwaysTemplate), for: .normal)
-        $0.tintColor = .black
+        if #available(iOS 13.0, *) {
+            $0.tintColor = .label
+        } else {
+            $0.tintColor = .black
+        }
         $0.contentHorizontalAlignment = .fill
         $0.contentVerticalAlignment = .fill
         $0.imageView?.contentMode = .scaleAspectFit
@@ -111,7 +114,11 @@ class AudioPlayerView: UIView {
 
     let miniPlayPauseButton = UIButton().then {
         $0.setImage(#imageLiteral(resourceName: "play").withRenderingMode(.alwaysTemplate), for: .normal)
-        $0.tintColor = .black
+        if #available(iOS 13.0, *) {
+            $0.tintColor = .label
+        } else {
+            $0.tintColor = .black
+        }
         $0.contentHorizontalAlignment = .fill
         $0.contentVerticalAlignment = .fill
         $0.imageView?.contentMode = .scaleAspectFit
@@ -119,7 +126,11 @@ class AudioPlayerView: UIView {
 
     let miniSkipBackWardButton = UIButton(type: .system).then {
         $0.setImage(#imageLiteral(resourceName: "rewind15").withRenderingMode(.alwaysTemplate), for: .normal)
-        $0.tintColor = .black
+        if #available(iOS 13.0, *) {
+            $0.tintColor = .label
+        } else {
+            $0.tintColor = .black
+        }
         $0.contentHorizontalAlignment = .fill
         $0.contentVerticalAlignment = .fill
         $0.imageView?.contentMode = .scaleAspectFit
@@ -143,7 +154,7 @@ class AudioPlayerView: UIView {
 
     init() {
         super.init(frame: .zero)
-        backgroundColor = .white
+        backgroundColor = Resources.Appearance.Color.viewBackground
         setupMainStackViewLayout()
         setupBookCoverView()
         setupButtonControlsView()
@@ -155,8 +166,8 @@ class AudioPlayerView: UIView {
         bookCoverImageView.add(to: bookCoverView)
         bookCoverImageView.centerXAnchor.constraint(equalTo: bookCoverView.centerXAnchor).isActive = true
         bookCoverImageView.centerYAnchor.constraint(equalTo: bookCoverView.centerYAnchor).isActive = true
-        bookCoverView.heightAnchor.constraint(equalTo: bookCoverView.heightAnchor, multiplier: 1).isActive = true
-        bookCoverView.widthAnchor.constraint(equalTo: bookCoverView.heightAnchor, multiplier: 1).isActive = true
+        bookCoverView.heightAnchor.constraint(equalToConstant: 275).isActive = true
+        bookCoverView.widthAnchor.constraint(equalToConstant: 275).isActive = true
     }
 
     func setupTitleAndAuthorView() {

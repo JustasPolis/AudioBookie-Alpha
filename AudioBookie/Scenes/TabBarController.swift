@@ -18,7 +18,7 @@ class TabBarController: UITabBarController {
         self.popupBar.barStyle = .prominent
         self.popupInteractionStyle = .drag
         self.popupContentView.popupCloseButtonStyle = .chevron
-        self.popupBar.progressView.progressTintColor = .purple
+        self.popupBar.progressView.progressTintColor = .systemPurple
         self.popupBar.progressViewStyle = .top
     }
 }

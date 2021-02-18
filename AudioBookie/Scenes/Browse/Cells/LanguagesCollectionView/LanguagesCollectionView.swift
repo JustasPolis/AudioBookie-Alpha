@@ -5,40 +5,23 @@
 //  Created by Justin on 2021-01-22.
 //
 
+import RxSwift
+import Then
 import UIKit
 
-class LanguagesCollectionView: UICollectionViewCell, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        6
-    }
+final class LanguagesCollectionView: UICollectionViewCell {
 
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellId", for: indexPath)
-        cell.backgroundColor = .purple
-        return cell
+    private var disposeBag = DisposeBag()
+    private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+    var viewModel: GenresCollectionViewModelType! {
+        didSet {
+            bindViewModel()
+        }
     }
-
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        .init(width: 200, height: frame.height)
-    }
-
-    let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
 
     override init(frame: CGRect) {
-        super.init(frame: .zero)
-        backgroundColor = .blue
-        collectionView.delegate = self
-        collectionView.dataSource = self
-        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cellId")
-        addSubview(collectionView)
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.topAnchor.constraint(equalTo: topAnchor).isActive = true
-        collectionView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-        collectionView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
-        collectionView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
-        collectionView.showsHorizontalScrollIndicator = false
-        guard let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout else { return }
-        flowLayout.scrollDirection = .horizontal
+        super.init(frame: frame)
+        setupCollectionView()
     }
 
     @available(*, unavailable)
@@ -46,7 +29,58 @@ class LanguagesCollectionView: UICollectionViewCell, UICollectionViewDataSource,
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(_ array: [String]) {
-        print(array)
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        disposeBag = DisposeBag()
+    }
+
+    private func setupCollectionView() {
+
+        // CollectionView setup
+
+        collectionView.do {
+            $0.register(cellType: UICollectionViewCell.self)
+            $0.backgroundColor = Resources.Appearance.Color.viewBackground
+            $0.showsHorizontalScrollIndicator = false
+            $0.add(to: self)
+            $0.pinToEdges(of: self)
+        }
+
+        // FlowLayout setup
+
+        guard let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout else { return }
+
+        flowLayout.do {
+            $0.scrollDirection = .horizontal
+            $0.itemSize = CGSize(width: 200, height: frame.height)
+            $0.sectionInset = UIEdgeInsets(top: 0, left: 16.0, bottom: 0, right: 16.0)
+        }
+    }
+
+    private func bindViewModel() {
+
+        // Inputs
+
+        let genreSelected = collectionView.rx.modelSelected(Genre.self).asDriver()
+        let input = GenresCollectionViewModelInput(genreSelected: genreSelected)
+
+        // Outputs
+
+        let output = viewModel.transform(input: input)
+
+        output.navigateToBooksByGenreScene
+            .drive()
+            .disposed(by: disposeBag)
+
+        // Genres collectionView binding
+
+        viewModel.genres
+            .drive(collectionView.rx.items) { collectionView, row, _ in
+                let indexPath = IndexPath(row: row, section: 0)
+                let cell = collectionView.dequeueReusableCell(ofType: UICollectionViewCell.self, for: indexPath)
+                cell.backgroundColor = .yellow
+                return cell
+            }
+            .disposed(by: disposeBag)
     }
 }

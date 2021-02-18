@@ -21,18 +21,14 @@ struct BrowseCollectionViewDataSource {
                         let cell = collectionView.dequeueReusableCell(ofType: GenresCollectionView.self, for: indexPath)
                         cell.viewModel = viewModel
                         return cell
-                    case .LanguagesCollectionView:
-                        let cell = collectionView.dequeueReusableCell(ofType: BrowseCollectionViewCell.self, for: indexPath)
+                    case .LanguagesCollectionView(let viewModel):
+                        let cell = collectionView.dequeueReusableCell(ofType: LanguagesCollectionView.self, for: indexPath)
+                        cell.viewModel = viewModel
                         return cell
                 }
             }, configureSupplementaryView: { dataSource, collectionView, kind, indexPath in
-                if indexPath.section == 0 {
-                    let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, kindType: SectionHeader1.self, for: indexPath)
-                    header.label.text = dataSource.sectionModels[indexPath.section].header
-                    return header
-                }
                 let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, kindType: SectionHeader.self, for: indexPath)
-                header.label.text = dataSource.sectionModels[indexPath.section].header
+                header.sectionLabel.text = dataSource.sectionModels[indexPath.section].header
                 return header
             })
     }
@@ -41,7 +37,7 @@ struct BrowseCollectionViewDataSource {
 enum BrowseCollectionViewChildViewType {
     case BooksCollectionView(_ viewModel: BooksCollectionViewModel)
     case GenresCollectionView(_ viewModel: GenresCollectionViewModel)
-    case LanguagesCollectionView(_ viewModel: LanguagesCollectionViewModel)
+    case LanguagesCollectionView(_ viewModel: GenresCollectionViewModel)
 }
 
 enum BrowseCollectionViewSectionModel {

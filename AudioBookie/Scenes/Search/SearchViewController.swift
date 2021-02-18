@@ -10,7 +10,7 @@ import RxSwift
 import Then
 import UIKit
 
-class SearchViewController: UIViewController, UISearchBarDelegate {
+class SearchViewController: UIViewController {
 
     private let disposeBag = DisposeBag()
     private let viewModel: SearchViewModelType
@@ -186,6 +186,7 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
             $0.searchController = searchController
             $0.title = "Search"
         }
+        navigationController?.navigationBar.layoutMargins.left = 16
         navigationController?.navigationBar.prefersLargeTitles = true
     }
 
@@ -198,8 +199,6 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
             $0.contentInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: -16)
         }
 
-        // FlowLayout setup
-
         guard let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout else { return }
 
         flowLayout.do {
@@ -210,7 +209,6 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
 
     private func setupSearchController() {
 
-        searchController.searchBar.delegate = self
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.isTranslucent = true
         searchController.hidesNavigationBarDuringPresentation = true

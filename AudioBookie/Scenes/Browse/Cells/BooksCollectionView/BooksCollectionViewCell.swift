@@ -14,6 +14,8 @@ final class BooksCollectionViewCell: UICollectionViewCell {
 
     let coverImage = UIImageView().then {
         $0.contentMode = .scaleAspectFit
+        $0.layer.cornerRadius = 4.0
+        $0.clipsToBounds = true
     }
 
     let titleLabel = UILabel()
@@ -24,14 +26,8 @@ final class BooksCollectionViewCell: UICollectionViewCell {
         $0.clipsToBounds = true
     }
 
-    lazy var stackView = UIStackView(arrangedSubviews: [myView]).then {
+    lazy var stackView = UIStackView(arrangedSubviews: [coverImage]).then {
         $0.axis = .vertical
-    }
-
-    override func layoutSubviews() {
-        coverImage.add(to: myView)
-        coverImage.pinToEdges(of: myView)
-        myView.setGradientBackground(.confidentCloud)
     }
 
     override init(frame: CGRect) {
@@ -54,15 +50,6 @@ final class BooksCollectionViewCell: UICollectionViewCell {
     func configure(with book: Book) {
         titleLabel.text = book.title
         authorLabel.text = book.author
-        coverImage.sd_setImage(with: URL(string: book.cover ?? ""), placeholderImage: UIImage())
-    }
-}
-
-extension UIView {
-    func setGradientBackground(_ type: Gradients) {
-        let gradientLayer = type.layer
-        gradientLayer.frame = bounds
-
-        layer.insertSublayer(gradientLayer, at: 0)
+        coverImage.image = #imageLiteral(resourceName: "librivoxCover")
     }
 }

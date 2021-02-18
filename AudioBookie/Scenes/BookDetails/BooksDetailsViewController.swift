@@ -17,8 +17,6 @@ class BookDetailsViewController: UIViewController {
     private let disposeBag = DisposeBag()
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
 
-    private let v = UIView()
-
     required init(viewModel: BookDetailsViewModelType, book: Book) {
         self.book = book
         self.viewModel = viewModel
@@ -34,12 +32,6 @@ class BookDetailsViewController: UIViewController {
         super.viewDidLoad()
         setupCollectionView()
         bindViewModel()
-        v.backgroundColor = .purple
-        v.add(to: view)
-        v.alpha = 0
-        v.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        v.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.1).isActive = true
-        v.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 1).isActive = true
     }
 
     private func bindViewModel() {
@@ -83,7 +75,7 @@ class BookDetailsViewController: UIViewController {
             $0.register(cellType: ChapterCell.self)
             $0.registerHeader(type: BookDetailsHeader.self)
             $0.registerFooter(type: BookDetailsFooter.self)
-            $0.backgroundColor = .white
+            $0.backgroundColor = Resources.Appearance.Color.viewBackground
             $0.add(to: self.view)
             $0.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
             $0.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
@@ -91,10 +83,7 @@ class BookDetailsViewController: UIViewController {
             $0.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
             $0.alwaysBounceVertical = false
             $0.showsVerticalScrollIndicator = false
-            $0.delegate = self
         }
-
-        // FlowLayout setup
 
         guard let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout else { return }
         flowLayout.do {
@@ -104,16 +93,3 @@ class BookDetailsViewController: UIViewController {
     }
 }
 
-extension BookDetailsViewController: UICollectionViewDelegateFlowLayout {
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        var percentageScrolled: CGFloat
-        percentageScrolled = scrollView.contentOffset.y / view.frame.width - 0
-        if percentageScrolled < 0.6 {
-            return
-        }
-
-        UIView.animate(withDuration: 0.5) {
-            self.v.alpha = fmax(0.0, percentageScrolled)
-        }
-    }
-}

@@ -40,7 +40,7 @@ final class GenresCollectionView: UICollectionViewCell {
 
         collectionView.do {
             $0.register(cellType: UICollectionViewCell.self)
-            $0.backgroundColor = .white
+            $0.backgroundColor = Resources.Appearance.Color.viewBackground
             $0.showsHorizontalScrollIndicator = false
             $0.add(to: self)
             $0.pinToEdges(of: self)
@@ -52,8 +52,8 @@ final class GenresCollectionView: UICollectionViewCell {
 
         flowLayout.do {
             $0.scrollDirection = .horizontal
-            $0.itemSize = CGSize(width: frame.height, height: frame.height)
-            $0.sectionInset = UIEdgeInsets(top: 0, left: 14.0, bottom: 0, right: 14.0)
+            $0.itemSize = CGSize(width: 200, height: frame.height)
+            $0.sectionInset = UIEdgeInsets(top: 0, left: 16.0, bottom: 0, right: 16.0)
         }
     }
 

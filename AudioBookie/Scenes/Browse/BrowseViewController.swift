@@ -11,12 +11,10 @@ import RxDataSources
 import RxSwift
 import UIKit
 
-class BrowseViewController: UIViewController, UICollectionViewDelegateFlowLayout {
+class BrowseViewController: UIViewController {
 
     let disposeBag = DisposeBag()
-
     let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-
     let viewModel: BrowseViewModelType
 
     required init(viewModel: BrowseViewModelType) {
@@ -31,32 +29,18 @@ class BrowseViewController: UIViewController, UICollectionViewDelegateFlowLayout
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        extendedLayoutIncludesOpaqueBars = true
         setupCollectionView()
-        navigationController?.setNavigationBarHidden(true, animated: true)
+        bindViewModel()
+        setupNavigationBar()
     }
 
-    func setupCollectionView() {
-        view.addSubview(collectionView)
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        guard let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout else { return }
+    func setupNavigationBar() {
+        navigationController?.navigationBar.layoutMargins.left = 16
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.title = "Browse"
+    }
 
-        flowLayout.itemSize = CGSize(width: view.frame.width, height: 350)
-
-        collectionView.backgroundColor = .white
-        collectionView.delegate = self
-        collectionView.dataSource = nil
-        collectionView.showsVerticalScrollIndicator = false
-        collectionView.register(cellType: BrowseCollectionViewCell.self)
-        collectionView.register(cellType: GenresCollectionView.self)
-        collectionView.register(cellType: BooksCollectionView.self)
-        collectionView.registerHeader(type: SectionHeader.self)
-        collectionView.registerHeader(type: SectionHeader1.self)
-
+    func bindViewModel() {
         let dataSource = BrowseCollectionViewDataSource.dataSource()
 
         let input = BrowseViewModelInput()
@@ -67,18 +51,49 @@ class BrowseViewController: UIViewController, UICollectionViewDelegateFlowLayout
             .disposed(by: disposeBag)
     }
 
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+    func setupCollectionView() {
+        view.addSubview(collectionView)
+        
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
 
-        if section == 0 {
-            return CGSize(width: collectionView.frame.width, height: 120)
-        }
-
-        return CGSize(width: collectionView.frame.width, height: 75)
+        collectionView.backgroundColor = Resources.Appearance.Color.viewBackground
+        collectionView.delegate = self
+        collectionView.dataSource = nil
+        collectionView.showsVerticalScrollIndicator = false
+        collectionView.register(cellType: GenresCollectionView.self)
+        collectionView.register(cellType: LanguagesCollectionView.self)
+        collectionView.register(cellType: BooksCollectionView.self)
+        collectionView.registerHeader(type: SectionHeader.self)
     }
 }
 
-extension Date {
-    var millisecondsSince1970: Int {
-        Int(timeIntervalSince1970 * 1000)
+extension BrowseViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+
+        CGSize(width: collectionView.frame.width, height: 75)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+
+        if indexPath.section == 0 {
+            return CGSize(width: view.frame.width, height: 165)
+        }
+        if indexPath.section == 1 {
+            return CGSize(width: view.frame.width, height: 165)
+        }
+
+        return CGSize(width: view.frame.width, height: 90)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        if section == 3 {
+            return UIEdgeInsets(top: 0, left: 0, bottom: 40, right: 0)
+        } else {
+            return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        }
     }
 }

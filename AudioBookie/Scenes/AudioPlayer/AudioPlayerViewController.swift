@@ -42,7 +42,7 @@ class AudioPlayerViewController: UIViewController {
         super.viewDidLoad()
         bindViewModel()
         setupAudioSession()
-        view.backgroundColor = .white
+        view.backgroundColor = Resources.Appearance.Color.viewBackground
         guard let currentItem = player.currentItem else { return }
         currentItem.preferredForwardBufferDuration = 10
         UIApplication.shared.beginReceivingRemoteControlEvents()
@@ -135,7 +135,7 @@ class AudioPlayerViewController: UIViewController {
 
         let bookCover = output.cover
             .flatMap { url -> Driver<KFCrossPlatformImage> in
-                let defaultImage = UIImage(imageLiteralResourceName: "audiobook")
+                let defaultImage = UIImage(imageLiteralResourceName: "librivoxCover" )
                 guard let url = url, let makeURL = URL(string: url) else { return .just(defaultImage) }
                 return KingfisherManager.shared.rx.retrieveImage(with: makeURL).asDriver(onErrorJustReturn: defaultImage)
             }
