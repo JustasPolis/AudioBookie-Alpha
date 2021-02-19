@@ -53,7 +53,7 @@ class BrowseViewController: UIViewController {
 
     func setupCollectionView() {
         view.addSubview(collectionView)
-        
+
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
@@ -64,8 +64,7 @@ class BrowseViewController: UIViewController {
         collectionView.delegate = self
         collectionView.dataSource = nil
         collectionView.showsVerticalScrollIndicator = false
-        collectionView.register(cellType: GenresCollectionView.self)
-        collectionView.register(cellType: LanguagesCollectionView.self)
+        collectionView.register(cellType: VerticalListCell.self)
         collectionView.register(cellType: BooksCollectionView.self)
         collectionView.registerHeader(type: SectionHeader.self)
     }
@@ -79,21 +78,17 @@ extension BrowseViewController: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
 
-        if indexPath.section == 0 {
-            return CGSize(width: view.frame.width, height: 165)
-        }
-        if indexPath.section == 1 {
+        if indexPath.section == 0 || indexPath.section == 1 {
             return CGSize(width: view.frame.width, height: 165)
         }
 
-        return CGSize(width: view.frame.width, height: 90)
+        return CGSize(width: view.frame.width, height: 50)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         if section == 3 {
             return UIEdgeInsets(top: 0, left: 0, bottom: 40, right: 0)
-        } else {
-            return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         }
+        return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     }
 }

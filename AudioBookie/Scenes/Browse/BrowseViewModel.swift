@@ -41,12 +41,12 @@ class BrowseViewModel: BrowseViewModelType {
         let newBooks = networkService.getNewBooks(limit: 15, offset: 0)
         let topBooks = networkService.getTopBooks(limit: 15, offset: 0)
 
-        let items = Observable.zip(newBooks, topBooks, genres) { [sceneCoordinator] newBooks, topBooks, genres -> [BrowseCollectionViewSectionModel] in
+        let items = Observable.zip(newBooks, topBooks, genres) { [sceneCoordinator] newBooks, topBooks, _ -> [BrowseCollectionViewSectionModel] in
             [
-                .TopBooksSection(childCollectionView: .BooksCollectionView(BooksCollectionViewModel(books: topBooks, sceneCoordinator: sceneCoordinator))),
-                .NewBooksSection(childCollectionView: .BooksCollectionView(BooksCollectionViewModel(books: newBooks, sceneCoordinator: sceneCoordinator))),
-                .GenresSection(childCollectionView: .GenresCollectionView(GenresCollectionViewModel(genres: genres, sceneCoordinator: sceneCoordinator))),
-                .LanguagesSection(childCollectionView: .LanguagesCollectionView(GenresCollectionViewModel(genres: genres, sceneCoordinator: sceneCoordinator))),
+                .TopBooksSection(childCollectionView: .HorizontalList(BooksCollectionViewModel(books: topBooks, sceneCoordinator: sceneCoordinator))),
+                .NewBooksSection(childCollectionView: .HorizontalList(BooksCollectionViewModel(books: newBooks, sceneCoordinator: sceneCoordinator))),
+                .GenresSection(items: [.VerticalListItem(text: "Action"), .VerticalListItem(text: "Horror"), .VerticalListItem(text: "Ancient Texts"), .VerticalListItem(text: "Astronomy"), .VerticalListItem(text: "Art")]),
+                .LanguagesSection(items: [.VerticalListItem(text: "English"), .VerticalListItem(text: "Chinese"), .VerticalListItem(text: "Lithuanian"), .VerticalListItem(text: "German")])
             ]
         }
         return Output(items: items)

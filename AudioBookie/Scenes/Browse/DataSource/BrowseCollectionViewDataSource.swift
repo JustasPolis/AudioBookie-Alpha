@@ -13,17 +13,13 @@ struct BrowseCollectionViewDataSource {
         .init(
             configureCell: { dataSource, collectionView, indexPath, _ in
                 switch dataSource[indexPath] {
-                    case .BooksCollectionView(let viewModel):
+                    case .HorizontalList(let viewModel):
                         let cell = collectionView.dequeueReusableCell(ofType: BooksCollectionView.self, for: indexPath)
                         cell.viewModel = viewModel
                         return cell
-                    case .GenresCollectionView(let viewModel):
-                        let cell = collectionView.dequeueReusableCell(ofType: GenresCollectionView.self, for: indexPath)
-                        cell.viewModel = viewModel
-                        return cell
-                    case .LanguagesCollectionView(let viewModel):
-                        let cell = collectionView.dequeueReusableCell(ofType: LanguagesCollectionView.self, for: indexPath)
-                        cell.viewModel = viewModel
+                    case .VerticalListItem(let text):
+                        let cell = collectionView.dequeueReusableCell(ofType: VerticalListCell.self, for: indexPath)
+                        cell.titleLabel.text = text
                         return cell
                 }
             }, configureSupplementaryView: { dataSource, collectionView, kind, indexPath in
@@ -34,22 +30,21 @@ struct BrowseCollectionViewDataSource {
     }
 }
 
-enum BrowseCollectionViewChildViewType {
-    case BooksCollectionView(_ viewModel: BooksCollectionViewModel)
-    case GenresCollectionView(_ viewModel: GenresCollectionViewModel)
-    case LanguagesCollectionView(_ viewModel: GenresCollectionViewModel)
+enum BrowseCollectionViewSectionItem {
+    case HorizontalList(_ viewModel: BooksCollectionViewModel)
+    case VerticalListItem(text: String)
 }
 
 enum BrowseCollectionViewSectionModel {
-    case NewBooksSection(childCollectionView: BrowseCollectionViewChildViewType)
-    case TopBooksSection(childCollectionView: BrowseCollectionViewChildViewType)
-    case LanguagesSection(childCollectionView: BrowseCollectionViewChildViewType)
-    case GenresSection(childCollectionView: BrowseCollectionViewChildViewType)
+    case NewBooksSection(childCollectionView: BrowseCollectionViewSectionItem)
+    case TopBooksSection(childCollectionView: BrowseCollectionViewSectionItem)
+    case LanguagesSection(items: [BrowseCollectionViewSectionItem])
+    case GenresSection(items: [BrowseCollectionViewSectionItem])
 }
 
 extension BrowseCollectionViewSectionModel: SectionModelType {
 
-    typealias Item = BrowseCollectionViewChildViewType
+    typealias Item = BrowseCollectionViewSectionItem
     var header: String {
         switch self {
             case .NewBooksSection:
@@ -63,16 +58,16 @@ extension BrowseCollectionViewSectionModel: SectionModelType {
         }
     }
 
-    var items: [BrowseCollectionViewChildViewType] {
+    var items: [BrowseCollectionViewSectionItem] {
         switch self {
             case .NewBooksSection(childCollectionView: let childCollectionView):
                 return [childCollectionView]
             case .TopBooksSection(childCollectionView: let childCollectionView):
                 return [childCollectionView]
-            case .LanguagesSection(childCollectionView: let childCollectionView):
-                return [childCollectionView]
-            case .GenresSection(childCollectionView: let childCollectionView):
-                return [childCollectionView]
+            case .LanguagesSection(items: let items):
+                return items
+            case .GenresSection(items: let items):
+                return items
         }
     }
 

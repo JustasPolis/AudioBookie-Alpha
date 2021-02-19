@@ -6,7 +6,7 @@
 //
 
 import Gradients
-import SDWebImage
+import Kingfisher
 import Then
 import UIKit
 
@@ -50,6 +50,10 @@ final class BooksCollectionViewCell: UICollectionViewCell {
     func configure(with book: Book) {
         titleLabel.text = book.title
         authorLabel.text = book.author
-        coverImage.image = #imageLiteral(resourceName: "librivoxCover")
+        if let coverURL = book.cover {
+            coverImage.kf.setImage(with: URL(string: coverURL))
+        } else {
+            coverImage.image = #imageLiteral(resourceName: "librivoxCover")
+        }
     }
 }

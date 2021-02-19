@@ -16,6 +16,11 @@ class SectionHeader: UICollectionReusableView {
 
     let seeAllButton: UIButton = {
         let button = UIButton()
+        if #available(iOS 13.0, *) {
+            button.setTitleColor(.label, for: .normal)
+        } else {
+            button.setTitleColor(.black, for: .normal)
+        }
         button.setTitle("See All", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
         return button
@@ -41,6 +46,4 @@ class SectionHeader: UICollectionReusableView {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
 }
-
