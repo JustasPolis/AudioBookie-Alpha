@@ -42,6 +42,8 @@ class BooksCollectionViewModel: BooksCollectionViewModelType {
             .do(onNext: { [sceneCoordinator] book in
                 sceneCoordinator.transition(to: Scene.bookDetails(book))
             }).mapToVoid()
+
+        
         return Output(navigateToBookDetails: navigateToBookDetails)
     }
 }

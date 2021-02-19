@@ -31,6 +31,8 @@
 		D034A1BC25C32D8000566A4C /* AVPlayer+Rx.swift in Sources */ = {isa = PBXBuildFile; fileRef = D034A1BB25C32D8000566A4C /* AVPlayer+Rx.swift */; };
 		D034A1C025C32DCC00566A4C /* Double+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D034A1BF25C32DCC00566A4C /* Double+Extensions.swift */; };
 		D047A29B25DF9976009BD7D6 /* VerticalListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D047A29A25DF9976009BD7D6 /* VerticalListCell.swift */; };
+		D04F49D025E00CD40079E3D8 /* NavigationBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D04F49CF25E00CD40079E3D8 /* NavigationBarController.swift */; };
+		D04F49D425E01BD80079E3D8 /* TestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D04F49D325E01BD80079E3D8 /* TestViewController.swift */; };
 		D050ECA925BAB835003B2A68 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D050ECA825BAB835003B2A68 /* AppDelegate.swift */; };
 		D050ECAD25BAB835003B2A68 /* BrowseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D050ECAC25BAB835003B2A68 /* BrowseViewController.swift */; };
 		D050ECB225BAB837003B2A68 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D050ECB125BAB837003B2A68 /* Assets.xcassets */; };
@@ -135,6 +137,8 @@
 		D034A1BB25C32D8000566A4C /* AVPlayer+Rx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVPlayer+Rx.swift"; sourceTree = "<group>"; };
 		D034A1BF25C32DCC00566A4C /* Double+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Double+Extensions.swift"; sourceTree = "<group>"; };
 		D047A29A25DF9976009BD7D6 /* VerticalListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerticalListCell.swift; sourceTree = "<group>"; };
+		D04F49CF25E00CD40079E3D8 /* NavigationBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarController.swift; sourceTree = "<group>"; };
+		D04F49D325E01BD80079E3D8 /* TestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestViewController.swift; sourceTree = "<group>"; };
 		D050ECA525BAB835003B2A68 /* AudioBookie.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AudioBookie.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D050ECA825BAB835003B2A68 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D050ECAC25BAB835003B2A68 /* BrowseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowseViewController.swift; sourceTree = "<group>"; };
@@ -365,6 +369,7 @@
 			children = (
 				D050ECEB25BB20C6003B2A68 /* Scene.swift */,
 				D050ECF325BB20CD003B2A68 /* SceneCoordinator.swift */,
+				D04F49D325E01BD80079E3D8 /* TestViewController.swift */,
 			);
 			path = Coordinator;
 			sourceTree = "<group>";
@@ -379,6 +384,7 @@
 				D0E0F1A525BC1DEB00CBC34B /* Library */,
 				D094C4E225BDB5B4001B6F69 /* Search */,
 				D01C5A1E25C0DECD00BA867D /* TabBarController.swift */,
+				D04F49CF25E00CD40079E3D8 /* NavigationBarController.swift */,
 			);
 			path = Scenes;
 			sourceTree = "<group>";
@@ -852,6 +858,8 @@
 				D094C4E425BDB5C6001B6F69 /* SearchViewController.swift in Sources */,
 				D0E0F19225BB7A2000CBC34B /* LanguagesCollectionViewCell.swift in Sources */,
 				D0E0F15025BB32AF00CBC34B /* SectionHeader.swift in Sources */,
+				D04F49D025E00CD40079E3D8 /* NavigationBarController.swift in Sources */,
+				D04F49D425E01BD80079E3D8 /* TestViewController.swift in Sources */,
 				D01C5A0225C0BB4800BA867D /* BookDetailsFooter.swift in Sources */,
 				D094C4F025BDB6C7001B6F69 /* Book.swift in Sources */,
 				D034A1BC25C32D8000566A4C /* AVPlayer+Rx.swift in Sources */,

@@ -13,7 +13,7 @@ final class BooksCollectionView: UICollectionViewCell {
 
     private var disposeBag = DisposeBag()
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-    var viewModel: BooksCollectionViewModelType! {
+    var viewModel: BooksCollectionViewModelType? {
         didSet {
             bindViewModel()
         }
@@ -48,13 +48,14 @@ final class BooksCollectionView: UICollectionViewCell {
 
         flowLayout.do {
             $0.scrollDirection = .horizontal
-            $0.itemSize = CGSize(width: frame.height, height: frame.height)
+            $0.itemSize = CGSize(width: frame.height - 60, height: frame.height)
             $0.sectionInset = UIEdgeInsets(top: 0, left: 16.0, bottom: 0, right: 16.0)
         }
     }
 
     private func bindViewModel() {
 
+        guard let viewModel = viewModel else { return }
         // Inputs
 
         let bookSelected = collectionView.rx.modelSelected(Book.self).asDriver()
@@ -67,8 +68,6 @@ final class BooksCollectionView: UICollectionViewCell {
         output.navigateToBookDetails
             .drive()
             .disposed(by: disposeBag)
-
-        // Books binding
 
         viewModel.books
             .drive(collectionView.rx.items) { collectionView, row, book in

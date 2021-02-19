@@ -32,6 +32,7 @@ class BookDetailsViewController: UIViewController {
         super.viewDidLoad()
         setupCollectionView()
         bindViewModel()
+        addBackButton()
     }
 
     private func bindViewModel() {
@@ -93,3 +94,19 @@ class BookDetailsViewController: UIViewController {
     }
 }
 
+extension UIViewController {
+
+    func addBackButton() {
+        let btnLeftMenu = UIButton()
+        let image = #imageLiteral(resourceName: "right-arrow")
+        btnLeftMenu.setImage(image, for: .normal)
+        btnLeftMenu.sizeToFit()
+        btnLeftMenu.addTarget(self, action: #selector(backButtonClick(sender:)), for: .touchUpInside)
+        let barButton = UIBarButtonItem(customView: btnLeftMenu)
+        navigationItem.leftBarButtonItem = barButton
+    }
+
+    @objc func backButtonClick(sender: UIButton) {
+        navigationController?.popViewController(animated: true)
+    }
+}

@@ -20,7 +20,7 @@ class VerticalListCell: UICollectionViewCell {
         } else {
             $0.backgroundColor = .black
         }
-        $0.alpha = 0.125
+        $0.alpha = 0.225
     }
 
     let rightIconImageView = UIImageView().then {
@@ -41,13 +41,13 @@ class VerticalListCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         stackView.add(to: self)
-        stackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16).isActive = true
+        stackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 17).isActive = true
         stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16).isActive = true
         stackView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         separator.add(to: self)
         separator.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
         separator.heightAnchor.constraint(equalToConstant: 0.3).isActive = true
-        separator.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16).isActive = true
+        separator.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 17).isActive = true
         separator.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16).isActive = true
 
         rightIconImageView.translatesAutoresizingMaskIntoConstraints = false

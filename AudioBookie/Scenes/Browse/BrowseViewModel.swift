@@ -46,7 +46,7 @@ class BrowseViewModel: BrowseViewModelType {
                 .TopBooksSection(childCollectionView: .HorizontalList(BooksCollectionViewModel(books: topBooks, sceneCoordinator: sceneCoordinator))),
                 .NewBooksSection(childCollectionView: .HorizontalList(BooksCollectionViewModel(books: newBooks, sceneCoordinator: sceneCoordinator))),
                 .GenresSection(items: [.VerticalListItem(text: "Action"), .VerticalListItem(text: "Horror"), .VerticalListItem(text: "Ancient Texts"), .VerticalListItem(text: "Astronomy"), .VerticalListItem(text: "Art")]),
-                .LanguagesSection(items: [.VerticalListItem(text: "English"), .VerticalListItem(text: "Chinese"), .VerticalListItem(text: "Lithuanian"), .VerticalListItem(text: "German")])
+                .LanguagesSection(items: [.VerticalListItem(text: "English"), .VerticalListItem(text: "Chinese"), .VerticalListItem(text: "Lithuanian"), .VerticalListItem(text: "German"), .VerticalListItem(text: "Italian")])
             ]
         }
         return Output(items: items)

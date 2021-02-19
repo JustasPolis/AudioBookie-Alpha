@@ -36,6 +36,7 @@ class BrowseViewController: UIViewController {
 
     func setupNavigationBar() {
         navigationController?.navigationBar.layoutMargins.left = 16
+        navigationController?.navigationBar.layoutMargins.bottom = 10
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.title = "Browse"
     }
@@ -79,10 +80,10 @@ extension BrowseViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
 
         if indexPath.section == 0 || indexPath.section == 1 {
-            return CGSize(width: view.frame.width, height: 165)
+            return CGSize(width: view.frame.width, height: 225)
         }
 
-        return CGSize(width: view.frame.width, height: 50)
+        return CGSize(width: view.frame.width, height: 42.5)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {

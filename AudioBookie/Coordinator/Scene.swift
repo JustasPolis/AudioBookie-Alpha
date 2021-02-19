@@ -34,7 +34,7 @@ extension Scene: TargetScene {
                 let networkService = NetworkService(network: network)
                 // BrowseViewController init
                 let browseViewModel = BrowseViewModel(networkService: networkService, sceneCoordinator: SceneCoordinator.shared)
-                let browseViewController = UINavigationController(rootViewController: BrowseViewController(viewModel: browseViewModel))
+                let browseViewController = NavigationController(rootViewController: BrowseViewController(viewModel: browseViewModel))
 
                 // SearchViewController init
                 let searchViewModel = SearchViewModel(networkService: networkService)
@@ -42,6 +42,8 @@ extension Scene: TargetScene {
 
                 // LibraryViewController init
                 let libraryViewController = UINavigationController(rootViewController: LibraryViewController())
+
+                let testViewController = UINavigationController(rootViewController: TestViewController())
 
                 // TabBarController init
 
@@ -61,13 +63,20 @@ extension Scene: TargetScene {
                     tag: 2
                 )
 
+                let testTabBarItem = UITabBarItem(
+                    title: "Search",
+                    image: #imageLiteral(resourceName: "search"),
+                    tag: 2
+                )
+
                 browseViewController.tabBarItem = browseTabBarItem
                 libraryViewController.tabBarItem = libraryTabBarItem
                 searchViewController.tabBarItem = searchTabBarItem
+                testViewController.tabBarItem = testTabBarItem
 
                 let tabBarController = TabBarController()
                 tabBarController.tabBar.tintColor = .systemPurple
-                tabBarController.viewControllers = [searchViewController, browseViewController, libraryViewController]
+                tabBarController.viewControllers = [testViewController, searchViewController, browseViewController, libraryViewController]
 
                 // return
                 return .tabBar(tabBarController)

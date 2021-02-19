@@ -9,7 +9,7 @@ import Foundation
 
 struct Book: Decodable {
     let title: String
-    let author: String
+    let author: String?
     let cover: String?
     let key: Int
     let description: String?
@@ -27,7 +27,7 @@ struct Book: Decodable {
     init(from decoder: Decoder) throws {
         let rootContainer = try decoder.container(keyedBy: CodingKeys.self)
         title = try rootContainer.decode(String.self, forKey: .title)
-        author = try rootContainer.decode(String.self, forKey: .author)
+        author = try rootContainer.decodeIfPresent(String.self, forKey: .author)
         cover = try rootContainer.decodeIfPresent(String.self, forKey: .cover)
         key = try rootContainer.decode(Int.self, forKey: .key)
         description = try rootContainer.decodeIfPresent(String.self, forKey: .description)
